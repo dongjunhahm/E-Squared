@@ -19,7 +19,8 @@ POST /v1/packet[/stream]
    AnalystPacket JSON  +  MetricsCollector (SQLite)
 ```
 
-- **LLM**: `LLM_PROVIDER=mock` by default (deterministic, no GPU). Optional `ollama`.
+- **LLM**: `LLM_PROVIDER=mock` | `ollama` | `api` (see below). Default `mock` needs no GPU/key.
+- **SQLite**: metrics runs → `METRICS_DB_PATH=data/metrics.db`; ticker RAG → `RAG_DB_PATH=data/rag.db`.
 - **RAG**: tiny SQLite seed for `ACME` / `NXLB` context snippets.
 - **SLO**: Fast ~8s / Thorough ~30s budgets; near-budget skips deep questions and marks `degraded`.
 
@@ -28,12 +29,44 @@ POST /v1/packet[/stream]
 ```bash
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env   # optional
+cp .env.example .env   # then paste API_KEY if using LLM_PROVIDER=api (.env is gitignored)
 
 uvicorn backend.app.main:app --host 0.0.0.0 --port 43125
 ```
 
 Open http://127.0.0.1:43125 — load ACME or NXLB samples, stream a packet, check metrics.
+
+## LLM providers (`mock` | `ollama` | `api`)
+
+Set `LLM_PROVIDER` in `.env` (copied from `.env.example`):
+
+| Value | When to use | Required env |
+|-------|-------------|--------------|
+| `mock` | CI, demos, no GPU/key (default) | none |
+| `ollama` | Local models via Ollama | `OLLAMA_BASE_URL`, `OLLAMA_MODEL`, `OLLAMA_MODEL_FAST` |
+| `api` | OpenAI-compatible chat completions (OpenAI, Cursor, other gateways) | `API_KEY` (paste your key), `API_BASE_URL` (default `https://api.openai.com/v1`), `API_MODEL`, `API_MODEL_FAST` |
+
+**Switch examples**
+
+```bash
+# Deterministic local demo
+LLM_PROVIDER=mock
+
+# Local Ollama
+LLM_PROVIDER=ollama
+OLLAMA_BASE_URL=http://127.0.0.1:11434
+OLLAMA_MODEL=llama3.2
+OLLAMA_MODEL_FAST=llama3.2:1b
+
+# OpenAI-compatible API (paste key; never commit .env)
+LLM_PROVIDER=api
+API_KEY=sk-...
+API_BASE_URL=https://api.openai.com/v1
+API_MODEL=gpt-4o-mini
+API_MODEL_FAST=gpt-4o-mini
+```
+
+`api` calls `POST {API_BASE_URL}/chat/completions` with `Authorization: Bearer {API_KEY}`. Point `API_BASE_URL` at any OpenAI-compatible endpoint.
 
 ### API
 
@@ -78,20 +111,22 @@ Golden fixtures live in `tests/golden/` and assert labels, GAAP severity, guidan
 - **Evidence**: span citations (`doc` / `start` / `end` / `quote`) keep claims grounded in the release text.
 - **Product realism**: Fast vs Thorough + latency budget degrade — demo what production agents do under SLO pressure.
 - **Observability**: TTFT, e2e latency percentiles, token/$ estimates, degrade rate in SQLite — ops loop without a heavy stack.
-- **Swap-ready LLM**: mock for CI/demo; Ollama adapter when a local model is available.
+- **Swap-ready LLM**: `mock` for CI/demo; `ollama` for local models; `api` for OpenAI-compatible keys.
 
 ## Layout
 
 ```
 backend/app/
   agents/          extractor, diff_normalizer, risk_guidance, questions_writer
-  llm/             mock + ollama
-  rag/store.py     ACME/NXLB context seed
+  llm/             mock + ollama + api (OpenAI-compatible)
+  rag/store.py     ACME/NXLB context seed (SQLite)
   metrics/         SQLite collector + summary
   orchestrator.py  graph + SSE
   main.py          FastAPI
 frontend/index.html
 data/samples/      ACME + NXLB Q1/Q2 releases
+data/metrics.db    created at runtime (gitignored)
+data/rag.db        created at runtime (gitignored)
 scripts/eval_golden.py
 tests/
 ```
