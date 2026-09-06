@@ -1,0 +1,21 @@
+ACME CORP (NASDAQ: ACME)
+Q1 2026 Earnings Release
+April 28, 2026
+
+Acme Corp today reported financial results for the first quarter ended March 31, 2026.
+
+Financial Highlights
+- Revenue: $1,240 million, up 6% year over year
+- GAAP diluted EPS: $1.12
+- Non-GAAP diluted EPS: $1.35 (excludes $0.23 of stock-based compensation and amortization)
+- Gross margin: 41.2%
+- Operating cash flow: $210 million
+
+Guidance
+For the second quarter of 2026, Acme expects revenue of $1.26 billion to $1.30 billion and non-GAAP EPS of $1.30 to $1.38. Full-year 2026 revenue growth is expected in the mid-single digits. Management remains constructive on demand in enterprise software and cloud infrastructure.
+
+Risk Factors
+Results may be impacted by elongated enterprise sales cycles, foreign exchange volatility, and elevated customer concentration in the top ten accounts. Macro uncertainty could pressure near-term deal timing. Supply chain lead times for networking hardware remain elevated versus pre-2024 norms.
+
+CEO Comment
+"We executed well in Q1 with solid sequential momentum," said Jordan Hale, CEO. "Customers continue to prioritize productivity and AI-adjacent workloads, though buying committees remain cautious on large transformational deals."

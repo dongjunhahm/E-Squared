@@ -1,0 +1,17 @@
+NEXUS LABS (NYSE: NXLB)
+Q2 2026 Earnings Release
+August 4, 2026
+
+Nexus Labs reported second-quarter 2026 results.
+
+Highlights
+- Revenue: $528 million (+9% YoY), ahead of guidance
+- GAAP EPS: $0.38
+- Non-GAAP EPS: $0.71
+- R&D as % of revenue: 29%
+
+Outlook
+Nexus expects Q3 revenue of $535–$555 million and now sees full-year growth in the high-single digits versus prior mid-single-digit expectations. Gross margin guidance is 61–62%, modestly lower on mix.
+
+Risks
+Hyperscale concentration, wafer allocation constraints, export-control uncertainty, and rising competitive intensity in inference accelerators. Management noted a larger-than-usual backlog of design-win qualifications that could slip into 2027.

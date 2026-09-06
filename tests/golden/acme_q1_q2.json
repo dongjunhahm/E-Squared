@@ -1,0 +1,14 @@
+{
+  "name": "acme_q1_q2_2026",
+  "ticker": "ACME",
+  "prior_file": "data/samples/acme_q1_2026.txt",
+  "current_file": "data/samples/acme_q2_2026.txt",
+  "expect": {
+    "min_diffs": 4,
+    "must_have_labels": ["Revenue", "GAAP EPS", "Non-GAAP EPS", "Gross margin"],
+    "gaap_eps_severity": "critical",
+    "guidance_change_types": ["raised"],
+    "min_questions_thorough": 2,
+    "risk_themes_any": ["Go-to-market restructuring", "Competitive pricing", "Cybersecurity costs"]
+  }
+}
