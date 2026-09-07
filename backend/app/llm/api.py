@@ -13,13 +13,15 @@ class ApiProvider(LLMProvider):
     """Calls any OpenAI-compatible /v1/chat/completions endpoint."""
 
     def __init__(self) -> None:
-        self.api_key = os.getenv("API_KEY", "").strip()
+        # Accept either API_KEY (generic OpenAI-compatible) or CURSOR_API_KEY.
+        self.api_key = (os.getenv("API_KEY") or os.getenv("CURSOR_API_KEY") or "").strip()
         self.base_url = os.getenv("API_BASE_URL", "https://api.openai.com/v1").rstrip("/")
         self.model = os.getenv("API_MODEL", "gpt-4o-mini")
         self.model_fast = os.getenv("API_MODEL_FAST", "gpt-4o-mini")
         if not self.api_key:
             raise RuntimeError(
-                "LLM_PROVIDER=api requires API_KEY in .env (paste your key, leave other API_* vars as needed)."
+                "LLM_PROVIDER=api requires API_KEY or CURSOR_API_KEY in .env "
+                "(paste your key, and point API_BASE_URL at a matching OpenAI-compatible endpoint)."
             )
 
     async def complete(self, prompt: str, *, system: str | None = None, fast: bool = False) -> LLMResult:

@@ -16,8 +16,21 @@ def test_get_llm_provider_mock(monkeypatch):
 def test_get_llm_provider_api_requires_key(monkeypatch):
     monkeypatch.setenv("LLM_PROVIDER", "api")
     monkeypatch.setenv("API_KEY", "")
+    monkeypatch.delenv("CURSOR_API_KEY", raising=False)
     with pytest.raises(RuntimeError, match="API_KEY"):
         get_llm_provider()
+
+
+def test_get_llm_provider_api_accepts_cursor_key(monkeypatch):
+    monkeypatch.setenv("LLM_PROVIDER", "api")
+    monkeypatch.delenv("API_KEY", raising=False)
+    monkeypatch.setenv("CURSOR_API_KEY", "crsr-test-not-real")
+    monkeypatch.setenv("API_BASE_URL", "https://example.com/v1")
+    provider = get_llm_provider()
+    from backend.app.llm.api import ApiProvider
+
+    assert isinstance(provider, ApiProvider)
+    assert provider.api_key == "crsr-test-not-real"
 
 
 def test_get_llm_provider_api_wires(monkeypatch):
