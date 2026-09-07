@@ -66,16 +66,29 @@ API_MODEL=gpt-4o-mini
 API_MODEL_FAST=gpt-4o-mini
 ```
 
-`api` calls `POST {API_BASE_URL}/chat/completions` with `Authorization: Bearer {API_KEY}`. Point `API_BASE_URL` at any OpenAI-compatible endpoint.
+`api` calls `POST {API_BASE_URL}/chat/completions` with `Authorization: Bearer {API_KEY}`. Point `API_BASE_URL` at any OpenAI-compatible endpoint. `CURSOR_API_KEY` is accepted as a fallback when `API_KEY` is unset.
+
+> **Note on Cursor keys:** a Cursor API key (`crsr_…`) is **not** an OpenAI key and there is no public Cursor OpenAI-compatible `/chat/completions` gateway — it only works with the Cursor Cloud Agents API. For `LLM_PROVIDER=api` use a real OpenAI-compatible key + `API_BASE_URL` (OpenAI `sk-…`, Groq/Together/DeepSeek/LLM-Gateway, or a local Ollama `…/v1`). Use `LLM_PROVIDER=mock` for a deterministic, key-free demo.
 
 ### API
 
 | Method | Path | Notes |
 |--------|------|-------|
 | GET | `/health` | Provider + status |
-| POST | `/v1/packet` | Sync `AnalystPacket` |
-| POST | `/v1/packet/stream` | SSE: `status` / `agent` / `metrics` / `packet` / `done` |
+| POST | `/v1/packet` | Sync `AnalystPacket` (JSON body) |
+| POST | `/v1/packet/upload` | Sync `AnalystPacket` from **file upload** (multipart: `current_file`, optional `prior_file`, `ticker`, `mode`, `latency_budget_ms`) |
+| POST | `/v1/packet/stream` | SSE: `status` / `agent` / `metrics` / `packet` / `done` (JSON body) |
+| POST | `/v1/packet/stream/upload` | SSE stream from **file upload** (same multipart fields as `/v1/packet/upload`) |
 | GET | `/v1/metrics/summary` | p50/p95 e2e & TTFT, degrade rate, $ |
+
+**File upload** — paste text *or* upload `.txt`/`.md` files. In the UI, use the "Upload file" buttons under each release; via the API use the `*/upload` endpoints:
+
+```bash
+curl -s -X POST http://127.0.0.1:43125/v1/packet/upload \
+  -F "current_file=@data/samples/acme_q2_2026.txt" \
+  -F "prior_file=@data/samples/acme_q1_2026.txt" \
+  -F "ticker=ACME" -F "mode=thorough"
+```
 
 Example:
 

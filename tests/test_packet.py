@@ -61,6 +61,38 @@ def test_packet_endpoint_acme(client):
     assert any(d.citations for d in packet.diffs)
 
 
+def test_packet_upload_endpoint_acme(client):
+    current = (SAMPLES / "acme_q2_2026.txt").read_text()
+    prior = (SAMPLES / "acme_q1_2026.txt").read_text()
+    resp = client.post(
+        "/v1/packet/upload",
+        files={
+            "current_file": ("acme_q2_2026.txt", current, "text/plain"),
+            "prior_file": ("acme_q1_2026.txt", prior, "text/plain"),
+        },
+        data={"ticker": "ACME", "mode": "thorough"},
+    )
+    assert resp.status_code == 200
+    packet = AnalystPacket.model_validate(resp.json())
+    assert packet.ticker == "ACME"
+    labels = {d.label for d in packet.diffs}
+    assert "Revenue" in labels
+    assert "GAAP EPS" in labels
+
+
+def test_packet_upload_current_only(client):
+    current = (SAMPLES / "nxlb_q2_2026.txt").read_text()
+    resp = client.post(
+        "/v1/packet/upload",
+        files={"current_file": ("nxlb_q2_2026.txt", current, "text/plain")},
+        data={"mode": "fast"},
+    )
+    assert resp.status_code == 200
+    packet = AnalystPacket.model_validate(resp.json())
+    assert packet.trace_id
+    assert "extractor" in packet.agents_run
+
+
 def test_health_and_metrics(client):
     h = client.get("/health")
     assert h.status_code == 200
