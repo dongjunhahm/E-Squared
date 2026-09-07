@@ -1,0 +1,17 @@
+{
+  "name": "Earnings Diff → Analyst Packet",
+  "install": "bash .cursor/install.sh",
+  "terminals": [
+    {
+      "name": "backend",
+      "command": ".venv/bin/uvicorn backend.app.main:app --host 0.0.0.0 --port 43125",
+      "description": "FastAPI server for the earnings-diff analyst packet API + frontend (http://127.0.0.1:43125)."
+    }
+  ],
+  "ports": [
+    {
+      "name": "web",
+      "port": 43125
+    }
+  ]
+}
